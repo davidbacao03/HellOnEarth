@@ -296,6 +296,22 @@ async def faceitsync(interaction: discord.Interaction, minutes: int):
     print(f"[FACEIT SYNC] Interval changed! Next sync will run every {SYNC_INTERVAL_MINUTES} minutes.")
     await interaction.response.send_message(f"FACEIT level sync interval set to {minutes} minutes.", ephemeral=True)
 
+# Slash command: /ping
+@tree.command(name="ping", description="Show the bot's response time delay.")
+async def ping(interaction: discord.Interaction):
+    """Show the bot's response time delay."""
+    import time
+    # Measure server (host) delay
+    start_time = time.perf_counter()
+    await interaction.response.defer(thinking=True)
+    server_delay = (time.perf_counter() - start_time) * 1000  # ms
+
+    # Measure API (Discord WebSocket) latency
+    api_delay = bot.latency * 1000  # ms
+
+    # Send the result
+    await interaction.followup.send(f"pong: {int(server_delay)}ms server; {int(api_delay)}ms api code.")
+
 if __name__ == "__main__":
     from keep_alive import keep_alive
     keep_alive()
